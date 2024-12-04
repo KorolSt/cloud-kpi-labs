@@ -5,26 +5,24 @@ require('dotenv').config();
 const app = express();
 const port = process.env.PORT || 3001;
 
-// Database connection
+
+const path = require('path');
+ 
+ 
+app.use(express.static(path.join(__dirname, 'public')));
+
+ 
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+ 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
 });
 
-// Middleware
-app.use(express.json());
-
-// Routes
-app.get('/todos', async (req, res) => {
-  try {
-    const result = await pool.query('SELECT * FROM todos ORDER BY id ASC');
-    res.json(result.rows);
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server error');
-  }
-});
-
+ 
 app.post('/todos', async (req, res) => {
   const { title } = req.body;
   try {
