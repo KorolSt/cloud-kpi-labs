@@ -1,20 +1,71 @@
 const express = require('express');
-const app = express();
-const port = process.env.PORT || 3000;
+const { Pool } = require('pg');
+require('dotenv').config();
 
-// Middleware to parse JSON
+const app = express();
+const port = process.env.PORT || 3001;
+
+// Database connection
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
+});
+
+// Middleware
 app.use(express.json());
 
-// Simple routes
-app.get('/', (req, res) => {
-  res.send('Welcome to the Node.js Project!');
+// Routes
+app.get('/todos', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM todos ORDER BY id ASC');
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server error');
+  }
 });
 
-app.post('/test', (req, res) => {
-  res.json({ message: 'Data received!', data: req.body });
+app.post('/todos', async (req, res) => {
+  const { title } = req.body;
+  try {
+    const result = await pool.query(
+      'INSERT INTO todos (title) VALUES ($1) RETURNING *',
+      [title]
+    );
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server error');
+  }
 });
 
-// Start server
+app.put('/todos/:id', async (req, res) => {
+  const { id } = req.params;
+  const { completed } = req.body;
+  try {
+    const result = await pool.query(
+      'UPDATE todos SET completed = $1 WHERE id = $2 RETURNING *',
+      [completed, id]
+    );
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server error');
+  }
+});
+
+app.delete('/todos/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    await pool.query('DELETE FROM todos WHERE id = $1', [id]);
+    res.send('Todo deleted');
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server error');
+  }
+});
+ 
 app.listen(port, () => {
-  console.log(`Server running locally on http://localhost:${port}`);
+  console.log(`Server running on http://localhost:${port}`);
+  console.log('Database URL:', process.env.DATABASE_URL);
 });
