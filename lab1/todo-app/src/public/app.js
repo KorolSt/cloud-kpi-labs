@@ -1,58 +1,57 @@
 const todoForm = document.getElementById('todo-form');
-const todoInput = document.getElementById('todo-input');
 const todoList = document.getElementById('todo-list');
-
  
-const fetchTodos = async () => {
-  try {
-    const response = await fetch('/todos');
-    const todos = await response.json();
-
-    todoList.innerHTML = ''; 
-    todos.forEach(todo => {
-      const li = document.createElement('li');
-      li.textContent = todo.title;
-
-      const deleteButton = document.createElement('button');
-      deleteButton.textContent = 'Delete';
-      deleteButton.onclick = () => deleteTodo(todo.id);
-
-      li.appendChild(deleteButton);
-      todoList.appendChild(li);
-    });
-  } catch (err) {
-    console.error('Error fetching todos:', err);
-  }
-};
-
+async function fetchTodos() {
+  const response = await fetch('/todos');
+  const todos = await response.json();
+  renderTodos(todos);
+}
  
-todoForm.onsubmit = async (e) => {
+function renderTodos(todos) {
+  todoList.innerHTML = '';  
+  todos.forEach((todo) => {
+    const li = document.createElement('li');
+    li.innerHTML = `
+      <input type="checkbox" ${todo.completed ? 'checked' : ''} data-id="${todo.id}" />
+      <span>${todo.title}</span>
+      <button data-id="${todo.id}">Delete</button>
+    `;
+    todoList.appendChild(li);
+  });
+}
+ 
+todoForm.addEventListener('submit', async (e) => {
   e.preventDefault();
-
-  try {
-    const title = todoInput.value;
-    await fetch('/todos', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title }),
-    });
-
-    todoInput.value = '';  
-    fetchTodos();  
-  } catch (err) {
-    console.error('Error adding todo:', err);
-  }
-};
-
+  const title = document.getElementById('title').value;
+  const response = await fetch('/todos', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ title }),
+  });
+  const newTodo = await response.json();
+  fetchTodos();  
+  todoForm.reset();
+});
  
-const deleteTodo = async (id) => {
-  try {
-    await fetch(`/todos/${id}`, { method: 'DELETE' });
+todoList.addEventListener('click', async (e) => {
+  if (e.target.tagName === 'INPUT') {
+    const id = e.target.dataset.id;
+    const completed = e.target.checked;
+    await fetch(`/todos/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ completed }),
+    });
     fetchTodos();  
-  } catch (err) {
-    console.error('Error deleting todo:', err);
   }
-};
 
+  if (e.target.tagName === 'BUTTON') {
+    const id = e.target.dataset.id;
+    await fetch(`/todos/${id}`, {
+      method: 'DELETE',
+    });
+    fetchTodos();  
+  }
+});
  
 fetchTodos();
