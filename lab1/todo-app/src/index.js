@@ -1,17 +1,24 @@
 const express = require('express');
 const { Pool } = require('pg');
+const path = require('path');
 require('dotenv').config();
 
 const app = express();
 const port = process.env.PORT || 3001;
- 
+
+// Middleware for serving static frontend files
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Middleware for parsing JSON bodies
+app.use(express.json());
+
+// Database connection
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
 });
- 
-app.use(express.json());  
- 
+
+// API Routes
 app.get('/todos', async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM todos ORDER BY id ASC');
@@ -23,7 +30,7 @@ app.get('/todos', async (req, res) => {
 });
 
 app.post('/todos', async (req, res) => {
-  const { title } = req.body;  
+  const { title } = req.body;
   try {
     const result = await pool.query(
       'INSERT INTO todos (title) VALUES ($1) RETURNING *',
@@ -62,6 +69,12 @@ app.delete('/todos/:id', async (req, res) => {
   }
 });
 
+// Catch-all route for serving the frontend
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// Start the server
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
   console.log('Database URL:', process.env.DATABASE_URL);
