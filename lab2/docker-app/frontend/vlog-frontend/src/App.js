@@ -1,26 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import './App.css';
 
 function App() {
-  const [posts, setPosts] = useState([]);
+  const [message, setMessage] = useState('');
 
   useEffect(() => {
-    fetch('https://vlog-backend.onrender.com/')
-      .then((response) => response.json())
-      .then((data) => setPosts(data));
+    // Replace with your backend URL
+    const backendUrl = process.env.REACT_APP_API_URL || 'https://vlog-backend.onrender.com/api/hello';
+    
+    fetch(backendUrl)
+      .then(response => response.json())
+      .then(data => setMessage(data.message))
+      .catch(error => console.error('Error fetching data:', error));
   }, []);
 
   return (
-    <div className="App">
-      <h1>Blog Posts</h1>
-      <ul>
-        {posts.map((post) => (
-          <li key={post.id}>
-            <h2>{post.title}</h2>
-            <p>{post.content}</p>
-          </li>
-        ))}
-      </ul>
+    <div style={{ textAlign: 'center', marginTop: '50px' }}>
+      <h1>Frontend</h1>
+      <p>Message from backend:</p>
+      <h2>{message || 'Loading...'}</h2>
     </div>
   );
 }

@@ -1,21 +1,18 @@
-const express = require("express");
-const { Pool } = require("pg");
-const dotenv = require("dotenv");
-
-dotenv.config();
-
+const express = require('express');
+const cors = require('cors');
 const app = express();
-const port = 3000;
+const PORT =  5000;
 
-const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
+// Middleware
+app.use(cors());
+app.use(express.json());
+
+// API endpoint
+app.get('/api/hello', (req, res) => {
+  res.json({ message: 'Hello from the backend!' });
 });
 
-app.get("/", async (req, res) => {
-    const result = await pool.query("SELECT NOW()");
-    res.send(`Hello from Backend! Current time: ${result.rows[0].now}`);
-});
-
-app.listen(port, () => {
-    console.log(`Backend running on http://localhost:${port}`);
+// Start the server
+app.listen(PORT, () => {
+  console.log(`Backend running at http://localhost:${PORT}`);
 });
