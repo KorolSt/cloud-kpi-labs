@@ -4,25 +4,24 @@ function App() {
   const [posts, setPosts] = useState([]);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  const [editingId, setEditingId] = useState(null);
 
-  useEffect(() => {
-    fetchPosts();
-  }, []);
+  const backendUrl = 'https://vlog-backend.onrender.com';
 
+  // Fetch all posts
   const fetchPosts = async () => {
     try {
-      const response = await fetch('/api/posts');
+      const response = await fetch(`${backendUrl}/api/posts`);
       const data = await response.json();
       setPosts(data);
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
+      console.error('Error fetching posts:', error);
     }
   };
 
+  // Create a new post
   const createPost = async () => {
     try {
-      const response = await fetch('/api/posts', {
+      const response = await fetch(`${backendUrl}/api/posts`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ title, content }),
@@ -32,75 +31,53 @@ function App() {
         setTitle('');
         setContent('');
       }
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
+      console.error('Error creating post:', error);
     }
   };
 
-  const updatePost = async () => {
-    try {
-      const response = await fetch(`/api/posts/${editingId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title, content }),
-      });
-      if (response.ok) {
-        fetchPosts();
-        setTitle('');
-        setContent('');
-        setEditingId(null);
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
+  // Delete a post
   const deletePost = async (id) => {
     try {
-      const response = await fetch(`/api/posts/${id}`, { method: 'DELETE' });
-      if (response.ok) fetchPosts();
-    } catch (err) {
-      console.error(err);
+      await fetch(`${backendUrl}/api/posts/${id}`, { method: 'DELETE' });
+      fetchPosts();
+    } catch (error) {
+      console.error('Error deleting post:', error);
     }
   };
 
+  // Initial fetch
+  useEffect(() => {
+    fetchPosts();
+  }, []);
+
   return (
-    <div>
+    <div style={{ padding: '20px', maxWidth: '600px', margin: '0 auto' }}>
       <h1>Vlog Posts</h1>
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          editingId ? updatePost() : createPost();
-        }}
-      >
+      <div>
         <input
           type="text"
-          value={title}
           placeholder="Title"
+          value={title}
           onChange={(e) => setTitle(e.target.value)}
+          style={{ width: '100%', marginBottom: '10px' }}
         />
         <textarea
-          value={content}
           placeholder="Content"
+          value={content}
           onChange={(e) => setContent(e.target.value)}
-        />
-        <button type="submit">{editingId ? 'Update' : 'Create'} Post</button>
-      </form>
-      <ul>
+          style={{ width: '100%', marginBottom: '10px' }}
+        ></textarea>
+        <button onClick={createPost} style={{ width: '100%' }}>
+          Create Post
+        </button>
+      </div>
+      <ul style={{ listStyle: 'none', padding: '0' }}>
         {posts.map((post) => (
-          <li key={post.id}>
+          <li key={post.id} style={{ marginBottom: '20px' }}>
             <h2>{post.title}</h2>
             <p>{post.content}</p>
             <button onClick={() => deletePost(post.id)}>Delete</button>
-            <button
-              onClick={() => {
-                setEditingId(post.id);
-                setTitle(post.title);
-                setContent(post.content);
-              }}
-            >
-              Edit
-            </button>
           </li>
         ))}
       </ul>
