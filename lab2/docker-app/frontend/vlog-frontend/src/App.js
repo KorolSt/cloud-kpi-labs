@@ -5,7 +5,7 @@ function App() {
   const [posts, setPosts] = useState([]);
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/posts')
+    fetch('https://vlog-backend.onrender.com/')
       .then((response) => response.json())
       .then((data) => setPosts(data));
   }, []);
