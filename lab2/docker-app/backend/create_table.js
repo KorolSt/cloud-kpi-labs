@@ -11,7 +11,7 @@ const pool = new Pool({
 
 (async () => {
   const createTableQuery = `
-    CREATE TABLE IF NOT EXISTS todos (
+    CREATE TABLE IF NOT EXISTS posts (
         id SERIAL PRIMARY KEY,
         title VARCHAR(255) NOT NULL,
         context TEXT,
