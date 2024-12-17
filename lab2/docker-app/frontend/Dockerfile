@@ -1,20 +1,23 @@
-# Use the official Node.js image to build the React app
+# Use official Node.js image to build the React app
 FROM node:18 AS build
-
+ 
 WORKDIR /
  
 COPY package.json package-lock.json ./
 RUN npm install
  
 COPY . .
+ 
 RUN npm run build
  
-FROM nginx:alpine
+FROM node:18
  
-COPY --from=build /app/build /usr/share/nginx/html
-
-# Expose port 80 for Render
-EXPOSE 80
-
-# Start NGINX
-CMD ["nginx", "-g", "daemon off;"]
+WORKDIR / 
+ 
+RUN npm install -g serve
+ 
+COPY --from=build /build /build
+ 
+EXPOSE 3000
+ 
+CMD ["serve", "-s", "build", "-l", "3000"]
