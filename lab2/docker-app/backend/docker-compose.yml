@@ -1,0 +1,17 @@
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: dbtodo_nysz_user
+      POSTGRES_PASSWORD: YSBHe0ETyzzEkXcNwVq1ckY5X9nRKIfr
+      POSTGRES_DB: dbtodo_nysz
+    ports:
+      - "5432:5432"
+
+  backend:
+    build: .
+    environment:
+      DATABASE_URL: "postgresql://dbtodo_nysz_user:YSBHe0ETyzzEkXcNwVq1ckY5X9nRKIfr@db:5432/dbtodo_nysz"
+      NODE_ENV: production
+    depends_on:
+      - db
