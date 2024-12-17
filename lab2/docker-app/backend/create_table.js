@@ -1,38 +1,28 @@
 const { Pool } = require('pg');
- 
-require('dotenv').config();
- 
+
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false,  
-  },
+  ssl: { rejectUnauthorized: false },
 });
 
-(async () => {
-  const createTableQuery = `
-    CREATE TABLE IF NOT EXISTS posts (
-        id SERIAL PRIMARY KEY,
-        title VARCHAR(255) NOT NULL,
-        context TEXT,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    );
-  `;
+const createTableQuery = `
+CREATE TABLE IF NOT EXISTS posts (
+  id SERIAL PRIMARY KEY,
+  title VARCHAR(100) NOT NULL,
+  content TEXT NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+`;
 
+const initializeDB = async () => {
   try {
-    console.log('Connecting to the database...');
-    const client = await pool.connect();
-    console.log('Connected successfully.');
-
-    console.log('Creating table...');
-    await client.query(createTableQuery);
-    console.log('Table created or already exists.');
-
-    client.release();
-  } catch (error) {
-    console.error('Error creating table:', error);
+    await pool.query(createTableQuery);
+    console.log('Database table created successfully!');
+  } catch (err) {
+    console.error('Error creating table:', err);
   } finally {
-    await pool.end();
-    console.log('Database connection closed.');
+    pool.end();
   }
-})();
+};
+
+initializeDB();
