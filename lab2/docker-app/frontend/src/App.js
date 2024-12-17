@@ -4,6 +4,8 @@ function App() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [token, setToken] = useState(localStorage.getItem('token') || '');
+  const [title, setTitle] = useState('');  
+  const [content, setContent] = useState('');
 
   const backendUrl = 'https://vlog-backend.onrender.com';
 
