@@ -1,24 +1,22 @@
 const express = require('express');
 const cors = require('cors');
-const { Pool } = require('pg'); // PostgreSQL client
+const { Pool } = require('pg');  
+ 
 const app = express();
-const PORT = 5000;
+const PORT = 3000;
+ 
+app.use(express.static(path.join(__dirname, 'public')));
 
+app.use(express.json());
  
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,  
-  port: process.env.DB_PORT,
-  ssl: {
-    rejectUnauthorized: false,  
-  },
+  connectionString: process.env.DATABASE_URL,
+  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
 });
-
-// Middleware
+ 
 app.use(cors());
 app.use(express.json());
-
-// API Routes
-
+ 
 // Get all posts
 app.get('/api/posts', async (req, res) => {
   try {
