@@ -9,4 +9,4 @@ RUN npm install
 COPY . .
 
 EXPOSE 3000
-CMD ["sh", "-c", "npm run create-table && node index.js"]
+CMD ["sh", "-c", "node index.js && npm run create-table "]

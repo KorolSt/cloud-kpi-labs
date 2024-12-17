@@ -9,7 +9,7 @@ services:
     depends_on:
       - db
     environment:
-      DATABASE_URL: postgres://user:password@db:5432/blog
+      DATABASE_URL: postgresql://dbtodo_nysz_user:YSBHe0ETyzzEkXcNwVq1ckY5X9nRKIfr@dpg-ct7jtp08fa8c73bs91n0-a/dbtodo_nysz
 
   frontend:
     build:
