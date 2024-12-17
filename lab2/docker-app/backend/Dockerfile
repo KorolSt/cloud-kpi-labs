@@ -9,4 +9,4 @@ COPY . .
 
 EXPOSE 3000
 
-CMD ["sh", "-c", "node create-table.js && node index.js"]
+CMD ["sh", "-c", "npm run create-table && node index.js"]
