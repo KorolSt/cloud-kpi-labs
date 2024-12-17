@@ -1,6 +1,6 @@
 FROM node:18-alpine
 
-WORKDIR /vlog-frontend
+WORKDIR /vlog-frontend/src
 
 COPY package.json package-lock.json ./
 RUN npm install
