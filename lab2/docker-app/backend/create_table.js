@@ -6,6 +6,7 @@ const pool = new Pool({
 });
 
 const createTablesQuery = `
+
 CREATE TABLE IF NOT EXISTS users (
   id SERIAL PRIMARY KEY,
   username VARCHAR(50) UNIQUE NOT NULL,
@@ -21,6 +22,8 @@ CREATE TABLE IF NOT EXISTS posts (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   user_id INT REFERENCES users(id) ON DELETE CASCADE
 );
+
+ALTER TABLE posts ADD COLUMN user_id INT REFERENCES users(id) ON DELETE CASCADE;
 `;
 
 const initializeDB = async () => {
