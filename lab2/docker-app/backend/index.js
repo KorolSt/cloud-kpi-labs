@@ -89,7 +89,12 @@ app.get('/api/posts', verifyToken, async (req, res) => {
 
 app.get('/api/posts-all', verifyToken, async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM posts');
+    const result = await pool.query(`
+      SELECT posts.id, posts.title, posts.content, posts.created_at, users.username 
+      FROM posts 
+      JOIN users ON posts.user_id = users.id
+      ORDER BY posts.created_at DESC
+    `);
     res.json(result.rows);
   } catch (err) {
     console.error(err);
