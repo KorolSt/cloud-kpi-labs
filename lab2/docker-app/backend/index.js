@@ -87,6 +87,17 @@ app.get('/api/posts', verifyToken, async (req, res) => {
   }
 });
 
+app.get('/api/posts-all', verifyToken, async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM posts');
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Error fetching all posts');
+  }
+});
+
+
 // Create a new post (only for authenticated users)
 app.post('/api/posts', verifyToken, async (req, res) => {
   const { title, content } = req.body;
