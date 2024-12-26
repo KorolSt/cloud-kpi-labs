@@ -1,2 +1,4 @@
 ./backend-auth/node_modules
 ./backend-auth/.env
+./backend-posts/node_modules
+./backend-posts/.env
