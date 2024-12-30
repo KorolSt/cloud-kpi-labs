@@ -10,11 +10,7 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // Routes
-app.use('/api/posts', postsRouter);
-
-app.get('/', (req, res) => {
-  res.send('Post service is running');
-});
+app.use('/', postsRouter);
 
 app.listen(PORT, () => {
   console.log(`Post service running on http://localhost:${PORT}`);

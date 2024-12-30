@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const pool = require('./db');
 
-// Get all posts
+ 
 router.get('/', async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM posts ORDER BY id DESC');
@@ -13,7 +13,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-// Get a single post
+
 router.get('/:id', async (req, res) => {
   const { id } = req.params;
   try {
