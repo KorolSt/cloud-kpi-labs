@@ -97,8 +97,7 @@ app.post('/api/posts', verifyToken, async (req, res) => {
     res.status(500).send('Error creating post');
   }
 });
-
-// Review endpoint using Together AI
+ 
 app.post('/api/review', verifyToken, async (req, res) => {
   const { content } = req.body;
 
@@ -117,7 +116,7 @@ app.post('/api/review', verifyToken, async (req, res) => {
             content: `Give short advice, 5 sentences, of how to improve this post: ${content}`,
           },
         ],
-        max_tokens: 150, // Adjust as needed
+        max_tokens: 150, 
         temperature: 0.7,
         top_p: 0.7,
         top_k: 50,
@@ -140,8 +139,7 @@ app.post('/api/review', verifyToken, async (req, res) => {
     res.status(500).send('Error generating review');
   }
 });
-
-// Start server
+ 
 app.listen(PORT, () => {
   console.log(`Backend running at http://localhost:${PORT}`);
 });
