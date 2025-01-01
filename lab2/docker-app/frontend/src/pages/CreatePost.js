@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useNavigate , Link } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 function CreatePost() {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+  const [review, setReview] = useState(''); // For storing the review
   const navigate = useNavigate();
 
   const handleCreatePost = async (e) => {
@@ -20,6 +21,21 @@ function CreatePost() {
     } catch (err) {
       console.error(err);
       alert('Failed to create post!');
+    }
+  };
+
+  const handleReviewContent = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.post(
+        'https://vlog-backend.onrender.com/api/review',
+        { content },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setReview(response.data.review); // Set the review in state
+    } catch (err) {
+      console.error(err);
+      alert('Failed to generate review!');
     }
   };
 
@@ -51,9 +67,22 @@ function CreatePost() {
           </div>
           <div className="d-flex justify-content-between">
             <button type="submit" className="btn btn-primary">Create</button>
+            <button
+              type="button"
+              className="btn btn-info"
+              onClick={handleReviewContent}
+            >
+              Generate Review
+            </button>
             <Link to="/dashboard" className="btn btn-secondary">Dashboard</Link>
           </div>
         </form>
+        {review && (
+          <div className="mt-4">
+            <h4>Generated Review:</h4>
+            <p>{review}</p>
+          </div>
+        )}
       </div>
     </div>
   );
