@@ -114,7 +114,7 @@ app.post('/api/review', verifyToken, async (req, res) => {
         messages: [
           {
             role: 'user',
-            content: `Give short advice, a few sentences, of how to improve this post: ${content}`,
+            content: `Give short advice, 5 sentences, of how to improve this post: ${content}`,
           },
         ],
         max_tokens: 150, // Adjust as needed
