@@ -15,13 +15,12 @@ const pool = new Pool({
 });
 
 const JWT_SECRET = '09WTSbv1';
-const TOGETHER_API_KEY = process.env.TOGETHER_API_KEY; // Set your Together AI API key as an environment variable
+const TOGETHER_API_KEY = process.env.TOGETHER_API_KEY;  
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 app.use(cors());
-
-// Register user
+ 
 app.post('/api/register', async (req, res) => {
   const { username, email, password } = req.body;
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -36,8 +35,7 @@ app.post('/api/register', async (req, res) => {
     res.status(500).send('Error registering user');
   }
 });
-
-// Login user
+ 
 app.post('/api/login', async (req, res) => {
   const { email, password } = req.body;
 
@@ -60,8 +58,7 @@ app.post('/api/login', async (req, res) => {
     res.status(500).send('Error logging in');
   }
 });
-
-// Middleware to verify JWT token
+ 
 const verifyToken = (req, res, next) => {
   const token = req.header('Authorization')?.replace('Bearer ', '');
   if (!token) {
@@ -76,8 +73,7 @@ const verifyToken = (req, res, next) => {
     res.status(400).send('Invalid token');
   }
 };
-
-// Get all posts
+ 
 app.get('/api/posts', verifyToken, async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM posts WHERE user_id = $1 ORDER BY id DESC', [req.userId]);
@@ -87,8 +83,7 @@ app.get('/api/posts', verifyToken, async (req, res) => {
     res.status(500).send('Error fetching posts');
   }
 });
-
-// Create a new post
+ 
 app.post('/api/posts', verifyToken, async (req, res) => {
   const { title, content } = req.body;
   try {
@@ -119,7 +114,7 @@ app.post('/api/review', verifyToken, async (req, res) => {
         messages: [
           {
             role: 'user',
-            content: `Review this content: ${content}`,
+            content: `Give short advice, a few sentences, of how to improve this post: ${content}`,
           },
         ],
         max_tokens: 150, // Adjust as needed
